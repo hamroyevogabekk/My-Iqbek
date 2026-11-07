@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#5b45e8">
+<title>IQTestEgo — Shaklli mantiq testi</title>
+<style>
+:root{--purple:#5948ed;--pink:#c51fd0;--ink:#202335;--muted:#858b9b;--line:#e9eaf2;--pale:#f5f6fa;--blue:#2878c9;--gold:#c79b45}
+*{box-sizing:border-box}
+body{margin:0;background:#f7f7fc;color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+button,input{font:inherit}
+.app{width:min(100%,520px);margin:0 auto;min-height:100vh;background:#fff;padding:18px 16px 30px;box-shadow:0 0 36px #29224b0b}
+.brand{display:flex;align-items:center;gap:11px;margin:3px 2px 20px}
+.logo{height:44px;width:44px;border-radius:15px;background:linear-gradient(135deg,var(--purple),var(--pink));display:grid;place-items:center;color:white;font-weight:950;font-size:20px;box-shadow:0 7px 18px #6846ed35}
+.brand h1{font-size:21px;margin:0;font-weight:900;letter-spacing:-.5px}.brand p{margin:2px 0 0;color:var(--muted);font-size:12px}
+.screen{display:none}.screen.active{display:block}
+.card{border:1px solid var(--line);border-radius:23px;padding:20px;background:#fff;box-shadow:0 9px 30px #34305c08;margin-bottom:15px}
+.hero{background:linear-gradient(135deg,#f1edff,#fff6fc);border:1px solid #e8e2ff;padding:24px 21px}
+.eyebrow{font-size:11px;color:#725ee8;font-weight:900;letter-spacing:1px;text-transform:uppercase}
+.hero h2{font-size:30px;line-height:1.1;letter-spacing:-1px;margin:10px 0}
+.hero p,.sub{font-size:14px;line-height:1.55;color:var(--muted);margin:8px 0 0}
+.btn{border:0;width:100%;border-radius:16px;padding:15px 14px;color:#fff;font-weight:850;font-size:15px;background:linear-gradient(105deg,var(--purple),var(--pink));box-shadow:0 7px 16px #7543d32b;cursor:pointer;margin-top:12px;transition:transform .18s,filter .18s}
+.btn:active{transform:scale(.985)}.btn.secondary{background:#f0f1f7;color:#383b4c;box-shadow:none}.btn:disabled{opacity:.42;cursor:not-allowed}
+.meta{font-size:12px;color:var(--muted);text-align:center;margin:13px 0 2px}
+.section-title{font-size:18px;font-weight:900;margin:0 0 5px}
+.field{display:block;margin-top:15px}.field span{display:block;font-size:13px;font-weight:800;margin-bottom:7px}
+.field input{width:100%;border:1px solid #e2e4ed;border-radius:13px;padding:14px;font-size:16px;color:var(--ink);background:white;outline:none}
+.field input:focus{border-color:#8a79f4;box-shadow:0 0 0 3px #8a79f41c}
+.topline{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:13px}
+.pill{background:#f2efff;color:#6951df;padding:8px 11px;border-radius:999px;font-size:12px;font-weight:900;white-space:nowrap}
+.progress{height:7px;background:#eeeef5;border-radius:99px;overflow:hidden;margin:13px 0 18px}
+.progress div{height:100%;width:0;background:linear-gradient(90deg,var(--purple),var(--pink));transition:width .25s}
+.matrix{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:6px;background:#eef0f6;border-radius:17px;margin:15px 0}
+.cell{aspect-ratio:1;background:#fff;border-radius:11px;display:grid;place-items:center;min-width:0}
+.cell.missing{background:repeating-linear-gradient(45deg,#f5f1ff,#f5f1ff 7px,#ece7ff 7px,#ece7ff 14px);color:#735be9;font-size:36px;font-weight:800}
+.shape-svg{width:78%;height:78%;max-width:82px;max-height:82px}
+.options{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}
+.option{position:relative;overflow:hidden;border:2px solid #e6e6ef;border-radius:14px;aspect-ratio:1;background:#fff;display:grid;place-items:center;padding:5px;cursor:pointer;transition:border-color .2s,background .2s,box-shadow .2s}
+.option.selected{border-color:#7555f4;background:#f6f2ff;box-shadow:0 0 0 2px #7555f41a}
+.option.is-flying{opacity:0;pointer-events:none}.option .shape-svg{width:86%;height:86%}
+.question-label{font-size:15px;font-weight:850;margin:12px 0 0}
+.hint{font-size:12px;color:var(--muted);margin-top:9px;line-height:1.5}
+.answer-flight{position:fixed;z-index:120;display:grid;place-items:center;margin:0;padding:5px;border:2px solid #7555f4;border-radius:14px;background:#f6f2ff;box-shadow:0 12px 35px #5948ed40;pointer-events:none;transform-origin:top left;will-change:left,top,width,height}
+.cell.filled-answer{background:#f6f2ff;border:2px solid #7555f4;box-shadow:inset 0 0 0 2px #7555f414;animation:cellArrive .25s ease-out}
+@keyframes cellArrive{0%{transform:scale(.88)}70%{transform:scale(1.05)}100%{transform:scale(1)}}
+.actions{display:flex;gap:10px}.actions .btn{flex:1}
+.loading-card{text-align:center;padding:30px 22px}
+.brain{font-size:58px;display:inline-block;animation:brainPulse 1s ease-in-out infinite}
+@keyframes brainPulse{0%,100%{transform:scale(1) rotate(-4deg);filter:drop-shadow(0 0 0 #a78bfa)}50%{transform:scale(1.12) rotate(4deg);filter:drop-shadow(0 8px 15px #a78bfa88)}}
+.loading-track{height:10px;border-radius:99px;background:#eeebfa;overflow:hidden;margin:20px 0 8px}
+.loading-track div{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--purple),var(--pink));animation:loading 2.8s ease-in-out forwards}
+@keyframes loading{0%{width:0}35%{width:42%}70%{width:76%}100%{width:100%}}
+.result-panel{text-align:center;background:linear-gradient(145deg,#f5f1ff,#fff7fc)}
+.result-score{font-size:57px;line-height:1;font-weight:950;letter-spacing:-2px;background:linear-gradient(120deg,var(--purple),var(--pink));color:transparent;background-clip:text;margin:12px 0 8px}
+.rankrow{display:flex;align-items:center;gap:10px;background:#f7f8fb;border-radius:13px;padding:10px;margin-top:8px;min-width:0;animation:rankAppear .22s ease both}
+@keyframes rankAppear{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.ranknum{width:29px;height:29px;flex-shrink:0;display:grid;place-items:center;background:#e2e5ec;border-radius:9px;font-weight:900;color:#5d6472;font-size:13px}
+.ranknum.gold{background:#ffc928;color:white}.ranknum.silver{background:#aab0ba;color:white}.ranknum.bronze{background:#c58b48;color:white}
+.flag{font-size:18px}.rankname{font-weight:800;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}.rankscore{color:var(--blue);font-weight:950}
+.tiny{font-size:11px;color:var(--muted);line-height:1.5}.empty{text-align:center;color:var(--muted);font-size:13px;padding:14px 4px}
+.certificate-wrap{padding:8px;background:#f6f2ff;border-radius:18px}
+.cert{position:relative;overflow:hidden;border:8px double #b99b67;background:radial-gradient(circle at 50% 50%,#fff 0,#fffdf6 65%,#f7efd9 100%);padding:32px 18px;text-align:center;min-height:390px;color:#3b3150}
+.cert:before,.cert:after{content:"✦  ❖  ✧  ❖  ✦  ❖  ✧  ❖  ✦";position:absolute;left:0;right:0;color:#b99b67;letter-spacing:5px;font-size:12px}
+.cert:before{top:12px}.cert:after{bottom:12px}
+.cert-corner{position:absolute;color:#c2a36d;font-size:28px}.cert-corner.a{top:22px;left:20px}.cert-corner.b{top:22px;right:20px}.cert-corner.c{bottom:22px;left:20px}.cert-corner.d{bottom:22px;right:20px}
+.cert-brand{font-size:13px;letter-spacing:3px;font-weight:950;color:#8564c8;margin-top:12px}
+.cert-ornament{font-size:25px;color:#bd9c61;margin:10px}
+.cert h2{font-family:Georgia,serif;font-size:28px;color:#51406e;margin:12px 0}
+.cert .person{font-family:Georgia,serif;font-size:25px;font-weight:800;color:#3f315c;border-bottom:1px solid #c9b789;display:inline-block;padding:0 15px 7px;margin:10px 0}
+.cert .certscore{font-size:32px;font-weight:950;color:#8a69ca;margin:9px}
+.cert p{font-size:12px;color:#766e80;line-height:1.55;margin:8px 0}
+.cert .owner{font-size:12px;font-weight:850;color:#6c568d;margin-top:18px}
+.footer-note{font-size:11px;color:#a0a3ad;text-align:center;margin:16px 4px 0;line-height:1.5}
+@media(min-width:600px){body{padding:22px 0}.app{border-radius:28px;min-height:calc(100vh - 44px);border:1px solid #f0eff7}}
+@media print{body{background:#fff}.app{width:100%;padding:0;box-shadow:none}.brand,.screen:not(#certificateScreen),#certificateScreen .no-print{display:none!important}#certificateScreen{display:block!important}.certificate-wrap{background:white;padding:0}.cert{margin:5mm auto;width:190mm;min-height:130mm;padding:25mm 15mm;print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+
+.language-switch{display:flex;gap:8px;margin:-7px 2px 17px}
+.lang-btn{flex:1;border:1px solid #e5e5ef;background:#fff;border-radius:13px;padding:10px 8px;font-size:12px;font-weight:900;color:#56596b;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px}
+.lang-btn.active{border-color:#7659ef;background:#f3efff;color:#684de0;box-shadow:0 0 0 2px #7659ef14}
+.gender-grid,.country-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.gender-card,.country-card{border:1.5px solid #e6e6ef;background:#fff;border-radius:16px;padding:13px 8px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;color:#33364a;transition:.18s}
+.gender-card{min-height:112px;flex-direction:column;gap:4px}
+.gender-card .gender-art{font-size:39px;line-height:1.2}
+.gender-card b,.country-card b{font-size:13px}
+.gender-card.selected,.country-card.selected{border-color:#7555f4;background:#f5f1ff;box-shadow:0 0 0 2px #7555f41a;color:#6047d7}
+.country-card{min-height:57px}
+.country-card span{font-size:23px}
+.profile-error{color:#c43b52;font-size:12px;font-weight:750;margin:10px 2px 0;min-height:0}
+.field input{font-size:15px}
+
+</style>
+</head>
+<body>
+<main class="app">
+<header class="brand"><div class="logo">IQ</div><div><h1>IQTestEgo</h1><p>Shakllar orqali mantiqiy fikrlash testi</p></div></header>
+<div class="language-switch" aria-label="Language">
+  <button type="button" class="lang-btn active" data-lang="uz"><span>🇺🇿</span> UZB</button>
+  <button type="button" class="lang-btn" data-lang="en"><span>🇬🇧</span> ENG</button>
+  <button type="button" class="lang-btn" data-lang="ru"><span>🇷🇺</span> RUS</button>
+</div>
+
+<section id="homeScreen" class="screen active">
+  <div class="card hero">
+    <div class="eyebrow" data-t="homeEyebrow">🧠 Mantiqingizni sinab ko‘ring</div>
+    <h2 data-t="homeTitle">IQ testingizni<br>boshlang!</h2>
+    <p data-t="homeDesc">20 ta qiziqarli savol. Geometrik shakllar va soat ko‘rinishidagi mantiqiy topshiriqlar.</p>
+    <button class="btn" id="startBtn" data-t="startFree">🚀 Bepul testni boshlash</button>
+    <div class="meta" data-t="homeMeta">20 ta savol · 4 ta javob · Mutlaqo bepul</div>
+  </div>
+  <div class="card"><h3 class="section-title" data-t="top30">🏆 Top 30 reyting</h3><p class="sub">Eng yuqori natijalar shu qurilmada saqlanadi. Global reyting backend ulangandan keyin ishlaydi.</p><div id="homeRanking"></div></div>
+  <p class="footer-note">IQTestEgo — ko‘ngilochar, norasmiy mantiq testi. Bu klinik yoki standartlashtirilgan IQ baholashi emas.</p>
+</section>
+
+<section id="profileScreen" class="screen">
+  <div class="card profile-card">
+    <h2 class="section-title" data-t="profileTitle">👋 Ism va ma’lumotlaringiz</h2>
+    <p class="sub" data-t="profileSub">Testni boshlash uchun quyidagilarni kiriting.</p>
+    <form id="profileForm">
+      <label class="field"><span data-t="fullName">Ism va familiyangiz</span><input id="fullName" required maxlength="70" placeholder="Masalan: Hamroyev Og'abek" autocomplete="name"></label>
+      <div class="field"><span data-t="gender">Jinsingizni tanlang</span>
+        <div class="gender-grid">
+          <button type="button" class="gender-card" data-gender="male" aria-pressed="false"><span class="gender-art">👨🏻‍💼</span><b data-t="male">Erkak</b></button>
+          <button type="button" class="gender-card" data-gender="female" aria-pressed="false"><span class="gender-art">👩🏻‍💼</span><b data-t="female">Ayol</b></button>
+        </div>
+      </div>
+      <label class="field"><span data-t="age">Yoshingiz</span><input id="age" type="number" min="5" max="120" required placeholder="Masalan: 18"></label>
+      <div class="field"><span data-t="country">Davlatingizni tanlang</span>
+        <div class="country-grid">
+          <button type="button" class="country-card" data-country="Uzbekistan"><span>🇺🇿</span><b data-t="uzbekistan">O‘zbekiston</b></button>
+          <button type="button" class="country-card" data-country="Russia"><span>🇷🇺</span><b data-t="russia">Rossiya</b></button>
+          <button type="button" class="country-card" data-country="Turkey"><span>🇹🇷</span><b data-t="turkey">Turkiya</b></button>
+          <button type="button" class="country-card" data-country="Kazakhstan"><span>🇰🇿</span><b data-t="kazakhstan">Qozog‘iston</b></button>
+          <button type="button" class="country-card" data-country="Tajikistan"><span>🇹🇯</span><b data-t="tajikistan">Tojikiston</b></button>
+          <button type="button" class="country-card" data-country="Kyrgyzstan"><span>🇰🇬</span><b data-t="kyrgyzstan">Qirg‘iziston</b></button>
+        </div>
+      </div>
+      <p class="profile-error" id="profileError" role="alert"></p>
+      <button class="btn" type="submit" data-t="beginTest">Testni boshlash →</button>
+    </form>
+  </div>
+  <button class="btn secondary" id="profileBack" data-t="back">← Orqaga</button>
+</section>
+
+<section id="quizScreen" class="screen">
+  <div class="card">
+    <div class="topline"><span class="pill" id="questionCount">1 / 20</span><span class="pill">⏱ <span id="timer">00:00</span></span></div>
+    <div class="progress"><div id="progressBar"></div></div>
+    <h2 class="section-title" data-t="whichShape">Qaysi shakl mos keladi?</h2>
+    <p class="sub" id="questionDesc">Qator va ustunlardagi o‘zgarishni kuzating.</p>
+    <div class="matrix" id="matrix"></div>
+    <div class="question-label" data-t="chooseAnswer">Javobni tanlang:</div>
+    <div class="options" id="options"></div>
+    <p class="hint">Javobni bossangiz, shakl animatsiya bilan bo‘sh katakka joylashadi. Keyin keyingi savolga o‘ting.</p>
+    <button class="btn" id="nextBtn" disabled>Keyingi savol →</button>
+    <button class="btn secondary" id="quitBtn" data-t="quit">Testdan chiqish</button>
+  </div>
+</section>
+
+<section id="checkingScreen" class="screen">
+  <div class="card loading-card">
+    <div class="brain">🧠</div>
+    <div class="eyebrow" data-t="analysis">IQTESTEGO TAHLILI</div>
+    <h2 class="section-title" style="margin-top:10px" data-t="checking">Natijangiz tekshirilmoqda...</h2>
+    <p class="sub" data-t="checkingSub">Javoblaringiz tahlil qilinmoqda. Biroz kuting, natijangiz tayyorlanmoqda.</p>
+    <div class="loading-track"><div></div></div>
+    <p class="tiny">Mantiqiy fikrlash · Shakllarni aniqlash · Ketma-ketlik</p>
+  </div>
+</section>
+
+<section id="resultScreen" class="screen">
+  <div class="card result-panel">
+    <div class="eyebrow" data-t="finished">✨ TEST YAKUNLANDI</div>
+    <h2 class="section-title" style="margin-top:8px"><span data-t="resultPrefix">Ajoyib</span>, <span id="resultName"></span>!</h2>
+    <div class="result-score" id="iqScore">100</div>
+    <div style="font-weight:850" data-t="scoreLabel">Taxminiy mantiqiy ball</div>
+    <p class="sub" id="resultDetails"></p>
+    <p class="tiny" data-t="disclaimer">Bu qisqa, ko‘ngilochar test bo‘yicha taxminiy ko‘rsatkich. Rasmiy IQ balli hisoblanmaydi.</p>
+  </div>
+  <div class="card"><h3 class="section-title" data-t="top30">🏆 Top 30 reyting</h3><div id="resultRanking"></div></div>
+  <button class="btn" id="certificateBtn" data-t="certificate">🏅 Sertifikatni olish</button>
+  <button class="btn secondary" id="retryBtn" data-t="retry">🔄 Qayta ishlash — yangi savollar</button>
+  <button class="btn secondary" id="homeBtn" data-t="home">Bosh sahifa</button>
+</section>
+
+<section id="certificateScreen" class="screen">
+  <div class="certificate-wrap">
+    <div class="cert" id="certificate">
+      <span class="cert-corner a">❖</span><span class="cert-corner b">❖</span><span class="cert-corner c">❖</span><span class="cert-corner d">❖</span>
+      <div class="cert-brand">✦ IQTESTEGO · CERTIFICATE OF ACHIEVEMENT ✦</div>
+      <div class="cert-ornament">❖ ✧ ✦ ✧ ❖</div>
+      <h2 data-t="certTitle">Faxriy sertifikat</h2>
+      <p>Ushbu sertifikat mantiqiy fikrlash sinovini muvaffaqiyatli yakunlagan</p>
+      <div class="person" id="certName">Ism Familiya</div>
+      <p>ga topshiriladi. Sizning intilishingiz, diqqat-e’tiboringiz va mantiqiy fikrlashingiz tahsinga loyiq!</p>
+      <div class="certscore">IQ <span id="certIQ">100</span></div>
+      <p id="certInfo">20 ta savoldan natija</p>
+      <div class="cert-ornament">✦ ❖ ✧ ❖ ✦</div>
+      <p>Har bir yangi savol — yangi imkoniyat. Izlanishda davom eting!</p>
+      <div class="owner">Sayt egasi: Hamroyev Og'abek</div>
+      <p>IQTestEgo · <span id="certDate"></span></p>
+    </div>
+  </div>
+  <div class="no-print">
+    <button class="btn" id="savePdfBtn" data-t="certSave">⬇️ Sertifikatni PDF saqlash</button>
+    <p class="hint" data-t="pdfHint">PDF fayl qurilmangizga yuklab olinadi.</p>
+    <button class="btn secondary" id="backResult">← Natijaga qaytish</button>
+  </div>
+</section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const screenIds=['homeScreen','profileScreen','quizScreen','checkingScreen','resultScreen','certificateScreen'];
+function show(id){screenIds.forEach(s=>$(s).classList.toggle('active',s===id));window.scrollTo({top:0,behavior:'smooth'});}
+let profile={},questions=[],current=0,answers=[],startedAt=0,timerInterval=null,lastResult=null,questionSetKey='',answerAnimation=null;
+let language='uz',selectedGender='',selectedCountry='';
+const words={
+ uz:{homeEyebrow:'🧠 Mantiqingizni sinab ko‘ring',resultPrefix:'Ajoyib',analysis:'IQTESTEGO TAHLILI',finished:'✨ TEST YAKUNLANDI',scoreLabel:'Taxminiy mantiqiy ball',disclaimer:'Bu qisqa, ko‘ngilochar test bo‘yicha taxminiy ko‘rsatkich. Rasmiy IQ balli hisoblanmaydi.',certTitle:'Faxriy sertifikat',pdfHint:'PDF fayl qurilmangizga yuklab olinadi.',homeTitle:'IQ testingizni<br>boshlang!',homeDesc:'20 ta o‘ylantiradigan savol. Geometrik shakllar va soat ko‘rinishidagi mantiqiy topshiriqlar.',startFree:'🚀 Bepul testni boshlash',homeMeta:'20 ta savol · 4 ta javob · Mutlaqo bepul',top30:'🏆 Top 30 reyting',profileTitle:'👋 Ism va ma’lumotlaringiz',profileSub:'Testni boshlash uchun quyidagilarni kiriting.',fullName:'Ism va familiyangiz',gender:'Jinsingizni tanlang',male:'Erkak',female:'Ayol',age:'Yoshingiz',country:'Davlatingizni tanlang',uzbekistan:'O‘zbekiston',russia:'Rossiya',turkey:'Turkiya',kazakhstan:'Qozog‘iston',tajikistan:'Tojikiston',kyrgyzstan:'Qirg‘iziston',beginTest:'Testni boshlash →',back:'← Orqaga',whichShape:'Qaysi shakl mos keladi?',chooseAnswer:'Javobni tanlang:',quit:'Testdan chiqish',certificate:'🏅 Sertifikatni olish',retry:'🔄 Qayta ishlash — yangi savollar',home:'Bosh sahifa',next:'Keyingi savol →',seeResult:'Natijani ko‘rish →',descClock:'Soat millari qanday tartibda o‘zgarayotganini kuzating.',descShape:'Shakllar, sonlar va yo‘nalishlar orasidagi qoidani toping.',alertProfile:'Ism-familiya, jins, yosh va davlatni tanlang.',confirmQuit:'Testdan chiqmoqchimisiz? Javoblaringiz saqlanmaydi.',checking:'Natijangiz tekshirilmoqda...',checkingSub:'Javoblaringiz tahlil qilinmoqda. Biroz kuting, natijangiz tayyorlanmoqda.',result:'Ajoyib',details:'20 ta savoldan {n} tasiga to‘g‘ri javob berdingiz. Test vaqti: {time}.',certSave:'⬇️ Sertifikatni PDF saqlash',certLoading:'⏳ Sertifikat tayyorlanmoqda...',certSaved:'✅ PDF saqlandi',certError:'PDF yaratishda xatolik. Internetga ulanib, qayta urinib ko‘ring.',rankEmpty:'Hozircha natijalar yo‘q. Birinchi bo‘lib testni yeching!'},
+ en:{homeEyebrow:'🧠 Test your logic',resultPrefix:'Great',analysis:'IQTESTEGO ANALYSIS',finished:'✨ TEST COMPLETED',scoreLabel:'Estimated logic score',disclaimer:'This is an estimated result from a short entertainment test, not an official IQ score.',certTitle:'Certificate of Achievement',pdfHint:'The PDF will be downloaded to your device.',homeTitle:'Start your<br>IQ test!',homeDesc:'20 thought-provoking questions with geometric shapes and clock puzzles.',startFree:'🚀 Start free test',homeMeta:'20 questions · 4 options · Completely free',top30:'🏆 Top 30 ranking',profileTitle:'👋 Your details',profileSub:'Enter the following details to begin.',fullName:'Your full name',gender:'Select your gender',male:'Male',female:'Female',age:'Your age',country:'Select your country',uzbekistan:'Uzbekistan',russia:'Russia',turkey:'Turkey',kazakhstan:'Kazakhstan',tajikistan:'Tajikistan',kyrgyzstan:'Kyrgyzstan',beginTest:'Start test →',back:'← Back',whichShape:'Which shape completes the pattern?',chooseAnswer:'Choose an answer:',quit:'Exit test',certificate:'🏅 Get certificate',retry:'🔄 Try again — new questions',home:'Home',next:'Next question →',seeResult:'See result →',descClock:'Follow the movement of the clock hands.',descShape:'Find the rule between shapes, quantities and directions.',alertProfile:'Enter your full name, gender, age and country.',confirmQuit:'Do you want to exit? Your answers will not be saved.',checking:'Your result is being calculated...',checkingSub:'Your answers are being analysed. Please wait a moment.',result:'Great',details:'You answered {n} out of 20 questions correctly. Time: {time}.',certSave:'⬇️ Save certificate as PDF',certLoading:'⏳ Preparing certificate...',certSaved:'✅ PDF saved',certError:'Could not create PDF. Check your internet connection and try again.',rankEmpty:'No results yet. Be the first to take the test!'},
+ ru:{homeEyebrow:'🧠 Проверьте свою логику',resultPrefix:'Отлично',analysis:'АНАЛИЗ IQTESTEGO',finished:'✨ ТЕСТ ЗАВЕРШЁН',scoreLabel:'Предполагаемый балл',disclaimer:'Это примерный результат развлекательного теста, а не официальный показатель IQ.',certTitle:'Почётный сертификат',pdfHint:'PDF-файл будет загружен на ваше устройство.',homeTitle:'Начните свой<br>IQ-тест!',homeDesc:'20 интересных задач с геометрическими фигурами и часами.',startFree:'🚀 Начать бесплатный тест',homeMeta:'20 вопросов · 4 варианта · Бесплатно',top30:'🏆 Топ-30 рейтинга',profileTitle:'👋 Ваши данные',profileSub:'Заполните данные, чтобы начать тест.',fullName:'Имя и фамилия',gender:'Выберите пол',male:'Мужчина',female:'Женщина',age:'Ваш возраст',country:'Выберите страну',uzbekistan:'Узбекистан',russia:'Россия',turkey:'Турция',kazakhstan:'Казахстан',tajikistan:'Таджикистан',kyrgyzstan:'Кыргызстан',beginTest:'Начать тест →',back:'← Назад',whichShape:'Какая фигура подходит?',chooseAnswer:'Выберите ответ:',quit:'Выйти из теста',certificate:'🏅 Получить сертификат',retry:'🔄 Повторить — новые вопросы',home:'Главная',next:'Следующий вопрос →',seeResult:'Посмотреть результат →',descClock:'Следите за движением стрелок часов.',descShape:'Найдите закономерность в фигурах, количестве и направлении.',alertProfile:'Введите имя и фамилию, пол, возраст и выберите страну.',confirmQuit:'Выйти из теста? Ответы не сохранятся.',checking:'Результат рассчитывается...',checkingSub:'Ваши ответы анализируются. Пожалуйста, подождите.',result:'Отлично',details:'Правильных ответов: {n} из 20. Время: {time}.',certSave:'⬇️ Сохранить сертификат PDF',certLoading:'⏳ Подготовка сертификата...',certSaved:'✅ PDF сохранён',certError:'Не удалось создать PDF. Проверьте интернет и попробуйте снова.',rankEmpty:'Пока нет результатов. Станьте первым!'}
+};
+function tr(k){return (words[language]||words.uz)[k]||words.uz[k]||k;}
+function countryLabel(c){const key={Uzbekistan:'uzbekistan',Russia:'russia',Turkey:'turkey',Kazakhstan:'kazakhstan',Tajikistan:'tajikistan',Kyrgyzstan:'kyrgyzstan'}[c];return key?tr(key):c;}
+function applyLanguage(){
+ document.documentElement.lang=language;
+ document.querySelectorAll('[data-t]').forEach(el=>{const k=el.dataset.t;if(words[language][k])el.innerHTML=words[language][k];});
+ document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===language));
+ $('fullName').placeholder=language==='en'?'Example: John Smith':language==='ru'?'Например: Иван Иванов':"Masalan: Hamroyev Og'abek";
+ $('age').placeholder=language==='en'?'Example: 18':language==='ru'?'Например: 18':'Masalan: 18';
+ if($('questionDesc')&&questions.length) $('questionDesc').textContent=questions[current].kind==='clock'?tr('descClock'):tr('descShape');
+ if($('nextBtn'))$('nextBtn').textContent=current===19?tr('seeResult'):tr('next');
+ if($('homeRanking')&&$('homeScreen').classList.contains('active'))renderRanking('homeRanking');
+}
+document.querySelectorAll('.lang-btn').forEach(b=>b.addEventListener('click',()=>{language=b.dataset.lang;applyLanguage();}));
+document.querySelectorAll('.gender-card').forEach(b=>b.addEventListener('click',()=>{selectedGender=b.dataset.gender;document.querySelectorAll('.gender-card').forEach(x=>{x.classList.toggle('selected',x===b);x.setAttribute('aria-pressed',x===b?'true':'false');});$('profileError').textContent='';}));
+document.querySelectorAll('.country-card').forEach(b=>b.addEventListener('click',()=>{selectedCountry=b.dataset.country;document.querySelectorAll('.country-card').forEach(x=>x.classList.toggle('selected',x===b));$('profileError').textContent='';}));
+
+
+const shapeTypes=['circle','square','triangle','diamond','bar','pentagon','hexagon','star','cross','ring','oval','arrow'];
+const rotations=[0,45,90,135,180,225,270,315];
+function shapeSVG(q){
+  if(q.kind==='clock'){
+    const h=q.hour%12, m=q.minute;
+    const hourAngle=(h%12)*30+m*.5-90, minuteAngle=m*6-90;
+    const hx=50+19*Math.cos(hourAngle*Math.PI/180),hy=50+19*Math.sin(hourAngle*Math.PI/180);
+    const mx=50+29*Math.cos(minuteAngle*Math.PI/180),my=50+29*Math.sin(minuteAngle*Math.PI/180);
+    return `<svg class="shape-svg" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="39" fill="#fff" stroke="#252b3b" stroke-width="4"/>${Array.from({length:12},(_,i)=>{let a=(i*30-90)*Math.PI/180;return `<circle cx="${50+32*Math.cos(a)}" cy="${50+32*Math.sin(a)}" r="1.8" fill="#596078"/>`}).join('')}<path d="M50 50 L${hx} ${hy}" stroke="#5948ed" stroke-width="5" stroke-linecap="round"/><path d="M50 50 L${mx} ${my}" stroke="#c51fd0" stroke-width="3.5" stroke-linecap="round"/><circle cx="50" cy="50" r="4" fill="#252b3b"/></svg>`;
+  }
+  const type=q.shape, count=q.count||1, rotation=q.rotation||0, filled=q.filled!==false;
+  const positions={1:[[50,50]],2:[[32,50],[68,50]],3:[[50,25],[29,70],[71,70]],4:[[30,30],[70,30],[30,70],[70,70]]};
+  const ps=positions[Math.min(count,4)]||positions[1];
+  let shapes=ps.map(([x,y])=>{
+    const size=count===1?34:count===2?21:count===3?17:14;
+    const common=`fill="${filled?'#cbd0df':'white'}" stroke="#252b3b" stroke-width="4"`;
+    let el='';
+    if(type==='square')el=`<rect x="${x-size/2}" y="${y-size/2}" width="${size}" height="${size}" ${common}/>`;
+    if(type==='triangle')el=`<polygon points="${x},${y-size/1.25} ${x-size/1.2},${y+size/1.5} ${x+size/1.2},${y+size/1.5}" ${common}/>`;
+    if(type==='circle')el=`<circle cx="${x}" cy="${y}" r="${size/2}" ${common}/>`;
+    if(type==='diamond')el=`<polygon points="${x},${y-size/1.2} ${x+size/1.5},${y} ${x},${y+size/1.2} ${x-size/1.5},${y}" ${common}/>`;
+    if(type==='bar')el=`<rect x="${x-size*.85}" y="${y-size*.42}" width="${size*1.7}" height="${size*.84}" ${common}/>`;
+    const polygon=(n,rad=size*.72,offset=-Math.PI/2)=>Array.from({length:n},(_,i)=>`${x+rad*Math.cos(offset+i*2*Math.PI/n)},${y+rad*Math.sin(offset+i*2*Math.PI/n)}`).join(' ');
+    if(type==='pentagon')el=`<polygon points="${polygon(5)}" ${common}/>`;
+    if(type==='hexagon')el=`<polygon points="${polygon(6)}" ${common}/>`;
+    if(type==='star'){const pts=Array.from({length:10},(_,i)=>{const r=i%2?size*.34:size*.78,a=-Math.PI/2+i*Math.PI/5;return `${x+r*Math.cos(a)},${y+r*Math.sin(a)}`}).join(' ');el=`<polygon points="${pts}" ${common}/>`;}
+    if(type==='cross')el=`<path d="M${x-size*.25} ${y-size*.85} h${size*.5} v${size*.6} h${size*.6} v${size*.5} h-${size*.6} v${size*.6} h-${size*.5} v-${size*.6} h-${size*.6} v-${size*.5} h${size*.6}z" ${common}/>`;
+    if(type==='ring')el=`<circle cx="${x}" cy="${y}" r="${size*.48}" fill="white" stroke="#252b3b" stroke-width="5"/><circle cx="${x}" cy="${y}" r="${size*.19}" fill="#cbd0df"/>`;
+    if(type==='oval')el=`<ellipse cx="${x}" cy="${y}" rx="${size*.75}" ry="${size*.43}" ${common}/>`;
+    if(type==='arrow')el=`<path d="M${x-size*.8} ${y-size*.25} H${x+size*.2} V${y-size*.7} L${x+size*.9} ${y} L${x+size*.2} ${y+size*.7} V${y+size*.25} H${x-size*.8}Z" ${common}/>`;
+    return `<g transform="translate(${x} ${y}) scale(${q.size||1}) translate(${-x} ${-y}) rotate(${rotation} ${x} ${y})">${el}</g>`;
+  }).join('');
+  return `<svg class="shape-svg" viewBox="0 0 100 100" aria-hidden="true">${shapes}</svg>`;
+}
+function same(a,b){return JSON.stringify(a)===JSON.stringify(b)}
+function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function makeShapeQuestion(seed){
+  const modes=['shape','count','rotation','filled','size','combo','diagonal'];
+  const mode=modes[Math.floor(Math.random()*modes.length)];
+  const baseType=Math.floor(Math.random()*shapeTypes.length);
+  const baseCount=1+Math.floor(Math.random()*4);
+  const baseRot=rotations[Math.floor(Math.random()*rotations.length)];
+  const baseFill=Math.random()>.5;
+  const baseSize=[.72,.9,1.08][Math.floor(Math.random()*3)];
+  const makeCell=(r,c)=>{
+    const step=r+c, q={kind:'shape',shape:shapeTypes[baseType],count:baseCount,rotation:baseRot,filled:baseFill,size:baseSize};
+    if(mode==='shape')q.shape=shapeTypes[(baseType+step)%shapeTypes.length];
+    if(mode==='count')q.count=((baseCount-1+step)%4)+1;
+    if(mode==='rotation')q.rotation=(baseRot+step*45)%360;
+    if(mode==='filled')q.filled=step%2===0?baseFill:!baseFill;
+    if(mode==='size')q.size=[.72,.9,1.08][([0,1,2].indexOf([.72,.9,1.08].find(x=>x===baseSize))+step)%3];
+    if(mode==='combo'){q.shape=shapeTypes[(baseType+step)%shapeTypes.length];q.rotation=(baseRot+step*45)%360;}
+    if(mode==='diagonal'){q.shape=shapeTypes[(baseType+r*2+c)%shapeTypes.length];q.filled=(r+c)%2===0?baseFill:!baseFill;}
+    return q;
+  };
+  const grid=Array.from({length:9},(_,i)=>makeCell(Math.floor(i/3),i%3));
+  const answer=grid[8];grid[8]=null;
+  const candidates=[];
+  const add=x=>{if(!same(x,answer)&&!candidates.some(y=>same(y,x)))candidates.push(x);};
+  add({...answer,shape:shapeTypes[(shapeTypes.indexOf(answer.shape)+1)%shapeTypes.length]});
+  add({...answer,count:answer.count%4+1});
+  add({...answer,rotation:(answer.rotation+45)%360});
+  add({...answer,filled:!answer.filled});
+  add({...answer,size:answer.size===.72?.9:answer.size===.9?1.08:.72});
+  add({...answer,shape:shapeTypes[(shapeTypes.indexOf(answer.shape)+3)%shapeTypes.length],rotation:(answer.rotation+90)%360});
+  const opts=shuffle([answer,...candidates.slice(0,3)]);
+  return {grid,answer,opts,correct:opts.findIndex(x=>same(x,answer)),kind:'shape',mode};
+}
+function makeClockQuestion(seed){
+  const startHour=1+Math.floor(Math.random()*9),startMinute=[0,5,10,15,20,25,30,35,40,45,50,55][Math.floor(Math.random()*12)];
+  const step=[5,10,15,20][Math.floor(Math.random()*4)];
+  const start=startHour*60+startMinute;
+  const grid=Array.from({length:9},(_,i)=>{let total=(start+i*step)%(12*60);return {kind:'clock',hour:Math.floor(total/60),minute:total%60};});
+  const answer=grid[8];grid[8]=null;
+  const opts=shuffle([answer,
+    {kind:'clock',hour:(answer.hour+1)%12,minute:answer.minute},
+    {kind:'clock',hour:answer.hour,minute:(answer.minute+15)%60},
+    {kind:'clock',hour:(answer.hour+2)%12,minute:(answer.minute+5)%60}
+  ]);
+  return {grid,answer,opts,correct:opts.findIndex(x=>same(x,answer)),kind:'clock'};
+}
+function makeQuestions(){
+  let set=[];
+  for(let i=0;i<20;i++)set.push(i%4===3?makeClockQuestion(i):makeShapeQuestion(i));
+  return shuffle(set);
+}
+function renderQuestion(){
+  const q=questions[current];
+  $('questionCount').textContent=`${current+1} / 20`;
+  $('progressBar').style.width=`${current/20*100}%`;
+  $('questionDesc').textContent=q.kind==='clock'?tr('descClock'):tr('descShape');
+  $('matrix').innerHTML=q.grid.map((v,i)=>`<div class="cell ${v?'':'missing answer-slot'}">${v?shapeSVG(v):'?'}</div>`).join('');
+  $('options').innerHTML=q.opts.map((o,i)=>`<button class="option" aria-label="${i+1}-variant" data-i="${i}">${shapeSVG(o)}</button>`).join('');
+  $('options').querySelectorAll('.option').forEach(b=>b.addEventListener('click',()=>{
+    const chosen=Number(b.dataset.i);
+    if(answerAnimation){answerAnimation.cancel();answerAnimation=null;}
+    const target=$('matrix').querySelector('.answer-slot');if(!target)return;
+    target.classList.remove('filled-answer');target.classList.add('missing','answer-slot');target.innerHTML='?';
+    $('options').querySelectorAll('.option').forEach(x=>{x.classList.remove('selected','is-flying');x.style.opacity='1';x.disabled=false;});
+    answers[current]=chosen;b.classList.add('selected');b.disabled=true;
+    const from=b.getBoundingClientRect(),to=target.getBoundingClientRect();
+    const flight=document.createElement('div');flight.className='answer-flight';flight.innerHTML=shapeSVG(q.opts[chosen]);
+    Object.assign(flight.style,{left:from.left+'px',top:from.top+'px',width:from.width+'px',height:from.height+'px'});
+    document.body.appendChild(flight);b.classList.add('is-flying');
+    const animation=flight.animate([
+      {left:from.left+'px',top:from.top+'px',width:from.width+'px',height:from.height+'px',borderRadius:'14px'},
+      {left:(from.left+(to.left-from.left)*.28)+'px',top:(from.top+(to.top-from.top)*.28)+'px',width:(from.width+(to.width-from.width)*.18)+'px',height:(from.height+(to.height-from.height)*.18)+'px',borderRadius:'13px',offset:.35},
+      {left:to.left+'px',top:to.top+'px',width:to.width+'px',height:to.height+'px',borderRadius:'11px'}
+    ],{duration:760,easing:'cubic-bezier(.22,.72,.25,1)',fill:'forwards'});
+    answerAnimation=animation;
+    animation.onfinish=()=>{
+      if(answerAnimation!==animation)return;
+      flight.remove();answerAnimation=null;b.classList.remove('is-flying');b.disabled=false;
+      target.classList.remove('missing');target.classList.add('filled-answer');target.innerHTML=shapeSVG(q.opts[chosen]);
+      b.classList.add('selected');$('nextBtn').disabled=false;
+      $('nextBtn').textContent=current===19?tr('seeResult'):tr('next');
+    };
+    animation.oncancel=()=>{flight.remove();if(answerAnimation===animation)answerAnimation=null;b.classList.remove('is-flying');b.disabled=false;};
+  }));
+  $('nextBtn').disabled=answers[current]===undefined;
+  $('nextBtn').textContent=current===19?tr('seeResult'):tr('next');
+}
+function startQuiz(){
+  questions=makeQuestions();let key=questions.map(q=>q.kind+JSON.stringify(q.answer)).join('|');
+  if(key===questionSetKey){questions=makeQuestions();key=questions.map(q=>q.kind+JSON.stringify(q.answer)).join('|');}
+  questionSetKey=key;current=0;answers=[];startedAt=Date.now();show('quizScreen');renderQuestion();
+  clearInterval(timerInterval);timerInterval=setInterval(()=>{let s=Math.floor((Date.now()-startedAt)/1000);$('timer').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');},1000);
+}
+function getRanking(){try{let a=JSON.parse(localStorage.getItem('iqtego-ranking')||'[]');return Array.isArray(a)?a:[];}catch(e){return[];}}
+function setRanking(a){try{localStorage.setItem('iqtego-ranking',JSON.stringify(a));}catch(e){}}
+const flags={'O‘zbekiston':'🇺🇿','Uzbekistan':'🇺🇿','Qozog‘iston':'🇰🇿','Kazakhstan':'🇰🇿','Rossiya':'🇷🇺','Russia':'🇷🇺','Turkiya':'🇹🇷','Turkey':'🇹🇷','AQSH':'🇺🇸','USA':'🇺🇸'}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function renderRanking(id){
+  const arr=getRanking().sort((a,b)=>b.score-a.score||b.correct-a.correct).slice(0,30);
+  $(id).innerHTML=arr.length?arr.map((p,i)=>`<div class="rankrow"><span class="ranknum ${i===0?'gold':i===1?'silver':i===2?'bronze':''}">${i+1}</span><span class="flag">${flags[p.country]||'🌍'}</span><span class="rankname">${esc(p.name)}</span><span class="rankscore">${p.score}</span></div>`).join(''):'<div class="empty">Hozircha natijalar yo‘q. Birinchi bo‘lib testni yeching!</div>';
+}
+function finish(){
+  clearInterval(timerInterval);
+  const correct=answers.reduce((n,a,i)=>n+(a===questions[i].correct?1:0),0);
+  const seconds=Math.floor((Date.now()-startedAt)/1000);
+  const iqScores = {
+      8: 110, 9: 118, 10: 125,
+      11: 130, 12: 133, 13: 135, 14: 138, 15: 140,
+      16: 150, 17: 153, 18: 155, 19: 158, 20: 160
+    };
+    const iqScore = iqScores[correct] ?? (70 + correct * 3);
+    lastResult={correct,score:iqScore,seconds};
+  show('checkingScreen');
+  setTimeout(()=>{
+    const person={name:profile.fullName,country:profile.country,score:lastResult.score,correct,date:new Date().toISOString()};
+    const ranking=getRanking();ranking.push(person);ranking.sort((a,b)=>b.score-a.score||b.correct-a.correct);setRanking(ranking.slice(0,30));
+    $('resultName').textContent=profile.firstName;
+    $('iqScore').textContent=lastResult.score;
+    $('resultDetails').textContent=tr('details').replace('{n}',correct).replace('{time}',`${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`);
+    $('certName').textContent=person.name;$('certIQ').textContent=person.score;
+    $('certInfo').textContent=`${correct}/20 · ${tr('age')}: ${profile.age} · ${tr('country')}: ${countryLabel(profile.country)}`;
+    $('certDate').textContent=new Date().toLocaleDateString(language==='en'?'en-GB':language==='ru'?'ru-RU':'uz-UZ');
+    renderRanking('resultRanking');show('resultScreen');
+    $('iqScore').animate([{transform:'scale(.6)',opacity:.2},{transform:'scale(1.12)',opacity:1},{transform:'scale(1)',opacity:1}],{duration:650,easing:'cubic-bezier(.2,.8,.2,1)'});
+  },2850);
+}
+$('startBtn').onclick=()=>show('profileScreen');
+$('profileBack').onclick=()=>show('homeScreen');
+$('profileForm').onsubmit=e=>{
+ e.preventDefault();
+ const full=$('fullName').value.trim().replace(/\s+/g,' ');
+ if(full.split(' ').length<2||!selectedGender||!selectedCountry||!$('age').value){$('profileError').textContent=tr('alertProfile');return;}
+ const parts=full.split(' ');
+ profile={fullName:full,firstName:parts[0],lastName:parts.slice(1).join(' '),age:$('age').value,country:selectedCountry,gender:selectedGender};
+ $('profileError').textContent='';startQuiz();
+};
+$('nextBtn').onclick=()=>{if(answers[current]===undefined)return;if(current<19){current++;renderQuestion();}else finish();};
+$('quitBtn').onclick=()=>{if(confirm(tr('confirmQuit'))){clearInterval(timerInterval);show('homeScreen');}};
+$('certificateBtn').onclick=()=>show('certificateScreen');
+$('backResult').onclick=()=>show('resultScreen');
+$('retryBtn').onclick=()=>startQuiz();
+$('homeBtn').onclick=()=>{renderRanking('homeRanking');show('homeScreen');};
+$('savePdfBtn').onclick=async()=>{
+  const btn=$('savePdfBtn'),old=btn.textContent;btn.disabled=true;btn.textContent=tr('certLoading');
+  try{
+    if(!window.html2canvas||!window.jspdf)throw new Error('PDF kutubxonasi yuklanmadi');
+    const canvas=await window.html2canvas($('certificate'),{scale:3,backgroundColor:'#fffdf6',useCORS:true,logging:false});
+    const {jsPDF}=window.jspdf;const pdf=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
+    const pw=pdf.internal.pageSize.getWidth(),ph=pdf.internal.pageSize.getHeight(),ratio=Math.min((pw-16)/canvas.width,(ph-16)/canvas.height);
+    const w=canvas.width*ratio,h=canvas.height*ratio;
+    pdf.addImage(canvas.toDataURL('image/png'),'PNG',(pw-w)/2,(ph-h)/2,w,h);
+    const filename=('IQTestEgo_Certificate_'+(profile.firstName+'_'+profile.lastName).replace(/[^a-z0-9_-]/gi,'_'))+'.pdf';
+    pdf.save(filename);btn.textContent=tr('certSaved');
+  }catch(err){alert(tr('certError'));btn.textContent=old;}
+  finally{setTimeout(()=>{btn.disabled=false;btn.textContent=old;},1800);}
+};
+renderRanking('homeRanking');
+applyLanguage();
+</script>
+</body>
+</html>

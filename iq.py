@@ -1,4 +1,4 @@
-
+import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import sqlite3
@@ -7,7 +7,10 @@ from datetime import datetime
 app = Flask(__name__)
 CORS(app)
 
-DATABASE = "iqtestego.db"
+DATABASE = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "iqtestego.db"
+)
 
 
 # IQ ballini hisoblash
@@ -53,6 +56,8 @@ def init_db():
 
     conn.commit()
     conn.close()
+
+init_db()
 
 
 # Server ishlayotganini tekshirish
